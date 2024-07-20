@@ -2,6 +2,7 @@ import chess
 import random
 import math
 import copy
+import torch
 
 class Engine:
     def generate_move(self, board):
@@ -26,13 +27,6 @@ class Engine:
             elif board_copy.turn == chess.BLACK and value < best_value:
                 best_value = value
                 best_move = move
-            
-            print(f"Evaluated move {move.uci()} with value {value}")
-
-        if best_move:
-            print(f"Best move is {best_move.uci()} with value {best_value}")
-        else:
-            print("No legal move found")
         return best_move.uci() if best_move else None
 
 
@@ -48,7 +42,6 @@ class Engine:
         """
         if depth == 0 or board.is_game_over():
             eval = self.evaluate(board)
-            print(f"Reached leaf node or game over with evaluation: {eval}")
             return eval
 
         if maximizing_player:
@@ -60,7 +53,6 @@ class Engine:
                 max_eval = max(max_eval, current_eval)
                 alpha = max(alpha, max_eval)
                 if beta <= alpha:
-                    print(f"Pruning branch at maximizing player with alpha: {alpha} and beta: {beta}")
                     break
             return max_eval
         else:
@@ -72,7 +64,6 @@ class Engine:
                 min_eval = min(min_eval, current_eval)
                 beta = min(beta, min_eval)
                 if beta <= alpha:
-                    print(f"Pruning branch at minimizing player with alpha: {alpha} and beta: {beta}")
                     break
             return min_eval
 
