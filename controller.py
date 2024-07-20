@@ -4,6 +4,7 @@ from engine import Engine
 from gui import Gui
 import tkinter as tk
 import chess
+import threading
 
 class ChessController:
     def __init__(self, root):
@@ -43,20 +44,28 @@ class ChessController:
 
     def make_move(self, move_str):
         """
-        Attempt to make a player's move followed by generating and making an AI move.
-        Update the GUI and display messages according to the move's success or failure.
+        Attempt to make a player's move and then initiate an AI move.
+        Update the GUI immediately after the player's move, and then again after the AI's move.
         """
-        try:
-            self.board.make_move(move_str)
-            self.update_gui_board()  # Update GUI after the player's move
-            ai_move = self.engine.generate_move(self.board.board)
+        self.board.make_move(move_str)
+        self.update_gui_board()  
+
+        # Runs AI move generation in a separate thread to avoid freezing the GUI
+        ai_thread = threading.Thread(target=self.handle_ai_move)
+        ai_thread.start()
+
+
+    def handle_ai_move(self):
+        """
+        Handles the generation and making of the AI move.
+        """
+        ai_move = self.engine.generate_move(self.board.board)
+        if ai_move:
             self.board.make_move(ai_move)
-            self.update_gui_board()  # Update GUI after the AI's move
-            self.gui.message_label.config(text=f"AI moved {ai_move}")
-        except ValueError as e:
-            self.gui.message_label.config(text=str(e))
-            # Optionally, re-raise the exception if further handling is needed elsewhere
-            raise ValueError(e)
+            self.root.after(0, self.update_gui_board)  # Ensure GUI update happens on the main thread
+            self.root.after(0, lambda: self.gui.message_label.config(text=f"AI moved {ai_move}"))
+        else:
+            self.root.after(0, lambda: self.gui.message_label.config(text="No valid AI moves available."))
 
     def on_square_selected(self, square):
         """
