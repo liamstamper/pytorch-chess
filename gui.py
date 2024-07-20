@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import chess
+from board import ChessBoard
 
 class Gui:
     def __init__(self, root, controller):
@@ -11,19 +12,11 @@ class Gui:
         self.canvas.pack(side="left", padx=10)
         self.images = self.load_images()
         self.setup_board()
+        self.selected_piece = None
         self.selected_position = None
+        self.canvas.bind("<Button-1>", self.calculate_clicks) 
 
-        self.side_frame = tk.Frame(root, width=200, height=640)
-        self.side_frame.pack(fill=tk.BOTH, side=tk.RIGHT)
 
-        self.move_entry = tk.Entry(self.side_frame, width=15, bg="white")
-        self.move_entry.pack(pady=20)
-
-        self.submit_button = tk.Button(self.side_frame, text="Make Move", command=self.submit_move)
-        self.submit_button.pack(pady=10)
-
-        self.message_label = tk.Label(self.side_frame, text="Enter your moves (e.g., e2e4)")
-        self.message_label.pack(pady=10)
 
     def load_images(self):
         """
@@ -48,15 +41,16 @@ class Gui:
 
     def submit_move(self):
         """
-        Submit the move entered by the user, update the game state, and refresh the GUI.
+        Submit the move clicked by the user, update the game state, and refresh the GUI.
         """
-        move_str = self.move_entry.get()
-        try:
+        move_str = (str(self.selected_piece) + str(self.selected_position))
+        if self.controller.validate_move(move_str):
             self.controller.make_move(move_str)
-            self.move_entry.delete(0, tk.END)
-        except ValueError as e:
-            self.move_entry.delete(0, tk.END)
-        self.controller.update_gui_board()
+            self.controller.update_gui_board()
+        else:
+            print("Invalid move attempted.")
+            self.selected_piece = None
+            self.selected_position = None
 
     def setup_board(self):
         """
@@ -72,19 +66,40 @@ class Gui:
                 color = color1 if color == color2 else color2
         self.canvas.pack()
 
-    def highlight_square(self, postion):
+    def highlight_square(self, position):
         """
         Highlight given square
         :param postion: col, row
         """
-        col, row = postion
+        col, row = position
         self.canvas.create_rectangle(col*80, row*80, col*80+80, row*80+80, outline='yellow', width=2)
 
     def unhighlight_squares(self):
         """
-        Redraws board unhighlighting square
+        Unhiglights given square by redrawing board
         """
-        self.setup_board() 
+        self.setup_board()
+
+
+    def calculate_clicks(self, event):
+        """
+        Convert pixel coordinates to board coordinates and manage the selection and movement of pieces.
+        :param event: The mouse event containing the x and y coordinates of the click.
+        """
+        col = event.x // 80  
+        row = event.y // 80  
+        pixel_position = (col, row)  
+        uci_position = chr(col + ord('a')) + str(8 - row)  
+
+        if not self.selected_piece:
+            self.highlight_square(pixel_position)  
+            self.selected_piece = uci_position
+        else:
+            self.selected_position = uci_position
+            self.unhighlight_squares()
+            self.submit_move()
+            self.selected_piece = None  
+            self.selected_position = None
 
     def calculate_position(self, square):
         """
@@ -97,7 +112,7 @@ class Gui:
         x = col * 80 + 40  # Center of square horizontally
         y = row * 80 + 40  # Center of square vertically
         return x, y
-
+    
     def clear_pieces(self):
         """
         Clear all piece images from the canvas.
