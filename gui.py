@@ -72,6 +72,20 @@ class Gui:
                 color = color1 if color == color2 else color2
         self.canvas.pack()
 
+    def highlight_square(self, postion):
+        """
+        Highlight given square
+        :param postion: col, row
+        """
+        col, row = postion
+        self.canvas.create_rectangle(col*80, row*80, col*80+80, row*80+80, outline='yellow', width=2)
+
+    def unhighlight_squares(self):
+        """
+        Redraws board unhighlighting square
+        """
+        self.setup_board() 
+
     def calculate_position(self, square):
         """
         Calculate the canvas coordinates for a chess square.
