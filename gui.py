@@ -16,7 +16,7 @@ class Gui:
         self.side_frame = tk.Frame(root, width=200, height=640)
         self.side_frame.pack(fill=tk.BOTH, side=tk.RIGHT)
 
-        self.move_entry = tk.Entry(self.side_frame, width=15)
+        self.move_entry = tk.Entry(self.side_frame, width=15, bg="white")
         self.move_entry.pack(pady=20)
 
         self.submit_button = tk.Button(self.side_frame, text="Make Move", command=self.submit_move)
