@@ -5,7 +5,7 @@ import chess
 class Gui:
     def __init__(self, root, controller):
         self.root = root
-        self.root.title("Escape From Ruin")
+        self.root.title("Pytorch Chess Engine - Liam Stamper")
         self.controller = controller
         self.canvas = tk.Canvas(root, width=640, height=640)
         self.canvas.pack(side="left", padx=10)
