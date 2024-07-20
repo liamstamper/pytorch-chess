@@ -63,9 +63,9 @@ class ChessController:
         if ai_move:
             self.board.make_move(ai_move)
             self.root.after(0, self.update_gui_board)  # Ensure GUI update happens on the main thread
-            self.root.after(0, lambda: self.gui.message_label.config(text=f"AI moved {ai_move}"))
+            print("AI moved " + str(ai_move))
         else:
-            self.root.after(0, lambda: self.gui.message_label.config(text="No valid AI moves available."))
+            print("No valid AI moves available.")
 
     def on_square_selected(self, square):
         """
@@ -81,3 +81,17 @@ class ChessController:
                 print(e)  # Optionally, handle this more gracefully in the GUI
             finally:
                 self.gui.selected_position = None
+
+    def validate_move(self, move_str):
+        """
+        Validate whether a move is legal.
+        :param move_str: UCI format string representing the move.
+        :return: Boolean indicating if the move is legal.
+        """
+        try:
+            move = chess.Move.from_uci(move_str)
+            if move in self.board.board.legal_moves:
+                return True
+        except ValueError:
+            return False
+        return False
