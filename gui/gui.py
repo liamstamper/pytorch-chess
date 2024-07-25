@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import chess
-from board import ChessBoard
+from engine.board import ChessBoard
 
 class Gui:
     def __init__(self, root, controller):
@@ -30,7 +30,7 @@ class Gui:
             for piece in pieces:
                 filename = f'{color}_{piece}.png'
                 try:
-                    image = Image.open(f'imgs/{filename}')
+                    image = Image.open(f'gui/imgs/{filename}')
                     key = f"{color}_{piece}"  # Using the full piece name for the key
                     images[key] = ImageTk.PhotoImage(image)
                 except FileNotFoundError:

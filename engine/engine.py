@@ -1,8 +1,8 @@
-import chess
-import random
-import math
+import os
 import copy
+import chess
 import torch
+from torch import nn 
 
 class Engine:
     def generate_move(self, board):
@@ -73,6 +73,16 @@ class Engine:
         :param board: The chess board to evaluate.
         :return: A numerical score where positive values are better for White, negative for Black.
         """
+        device = (
+            "cuda"
+            if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
+            else "cpu"
+        )
+        print(f"Using {device} device")
+
+
         piece_values = {
             chess.PAWN: 1,
             chess.KNIGHT: 3,

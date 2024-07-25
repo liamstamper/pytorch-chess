@@ -1,6 +1,6 @@
 # main.py
 import tkinter as tk
-from controller import ChessController
+from gui.controller import ChessController
 
 def main():
     root = tk.Tk()

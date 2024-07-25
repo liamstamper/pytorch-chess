@@ -1,7 +1,7 @@
 # controller.py
-from board import ChessBoard
-from engine import Engine  
-from gui import Gui
+from engine.board import ChessBoard
+from engine.engine import Engine  
+from gui.gui import Gui
 import tkinter as tk
 import chess
 import threading
